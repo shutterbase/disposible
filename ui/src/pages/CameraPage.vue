@@ -12,15 +12,17 @@
     <img id="shutter" class="shutter-image" src="shutter.png" alt="Shutter" />
     <img class="counter-frame-image" src="counter-frame.png" alt="CounterFrame" />
     <div class="counter-dial-perimeter">
+      <div class="counter-dial-indicator">v</div>
       <div class="counter-dial" :style="{ transform: `rotate(${dialAngle}deg)` }">
         <div
           class="tick-container"
-          v-for="n in totalShots"
+          v-for="n in tickCount"
           :key="n"
           :style="{ transform: `rotate(${(n - 1) * angleStep}deg)` }"
         >
           <span v-if="(n - 1) % 4 === 0" class="label">{{ n - 1 }}</span>
-          <span class="tick"></span>
+          <span v-if="n - 1 <= totalShots" class="tick tick-visible"></span>
+          <span v-else class="tick"></span>
         </div>
       </div>
     </div>
@@ -42,9 +44,10 @@ let endClickTriggered = false;
 
 let shutterArmed = false;
 
-const totalShots = 27;
+const totalShots = 24;
+const tickCount = totalShots + 2;
 const dialAngle = ref(0);
-const angleStep = -360 / totalShots;
+const angleStep = -360 / tickCount;
 
 function resetLeaverClicks() {
   leaverClicks = [];
@@ -303,12 +306,23 @@ video {
   width: 14vh;
   height: 14vh;
   right: 16.75vh;
-  top: 9vh;
+  top: 9.5vh;
   /* transform: translateX(-50%); */
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
   z-index: 10;
+}
+
+.counter-dial-indicator {
+  position: absolute;
+  background-color: white;
+  width: 15vh;
+  height: 15vh;
+  /* top: 1vh; */
+  text-align: center;
+  font-size: 5vh;
+  font-weight: bold;
 }
 
 .counter-dial {
@@ -339,14 +353,19 @@ video {
 
   width: 2px;
   height: 5px;
-  background: #000;
   transform-origin: bottom center;
 }
+
+.tick-visible {
+  background: #000;
+}
+
 .label {
   position: absolute;
   top: -6.5vh;
   left: -0.75vh;
   font-size: 2.5vh;
   text-align: center;
+  font-weight: bold;
 }
 </style>
